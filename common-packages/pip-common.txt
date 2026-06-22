@@ -1,0 +1,49 @@
+# 常用 Python 库清单（按需增删，一行一个）
+# 下载时会自动连同它们的所有间接依赖一起下载，无需手动列依赖。
+
+# --- HTTP / 网络 ---
+requests
+httpx
+urllib3
+aiohttp
+
+# --- Web 框架 / 服务 ---
+fastapi
+uvicorn
+flask
+gunicorn
+pydantic
+
+# --- 数据处理 ---
+numpy
+pandas
+scipy
+openpyxl
+
+# --- 解析 / 工具 ---
+beautifulsoup4
+lxml
+pyyaml
+python-dotenv
+rich
+click
+tqdm
+tenacity
+
+# --- 数据库 ---
+sqlalchemy
+psycopg2-binary
+redis
+pymysql
+
+# --- 测试 / 开发 ---
+pytest
+black
+ruff
+ipython
+
+# --- 打包 / 上传（导入 Nexus 需要 twine）---
+twine
+setuptools
+wheel
+pip

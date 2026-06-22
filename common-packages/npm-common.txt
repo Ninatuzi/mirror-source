@@ -1,0 +1,33 @@
+# 常用 npm 包清单（按需增删，一行一个）
+# 下载时会自动解析全部传递依赖，无需手动列。
+# 写包名即可，会取最新版；如需锁版本写 react@18.2.0 这种形式。
+
+# --- 运行时 / 工具 ---
+typescript
+ts-node
+nodemon
+dotenv
+axios
+lodash
+dayjs
+zod
+
+# --- 前端框架 ---
+react
+react-dom
+vue
+
+# --- 构建工具 ---
+vite
+webpack
+esbuild
+
+# --- 后端 ---
+express
+fastify
+
+# --- 测试 / lint ---
+jest
+vitest
+eslint
+prettier
