@@ -11,21 +11,20 @@
 #   操作系统/架构/Python 版本不一致，装的时候可能用不了。
 #   下面默认按 manylinux + 指定 Python 版本下载，确保在离线 Linux 服务器可用。
 #
-#   默认值已设为「稳妥推荐组合」：Python 3.11 + x86_64 Linux
-#   —— wheel 覆盖最全、兼容性最好。除非你的离线服务器明确不是这个组合，
-#      否则直接用默认值即可。
+#   默认值已设为「与你环境对齐」：Python 3.13 + x86_64 Linux
+#   除非你的离线服务器明确不是这个组合，否则直接用默认值即可。
 #   ARM 服务器：PLATFORM=manylinux2014_aarch64
-#   其他 Python：3.10 -> 310, 3.12 -> 312
+#   其他 Python：3.11 -> 311, 3.12 -> 312
 #
 set -euo pipefail
 
 REQ_FILE="${1:-../common-packages/pip-common.txt}"
 OUT_DIR="pip-packages"
 
-# ===== 稳妥推荐组合（如离线服务器不同再改）=====
-PYVER="${PYVER:-311}"                         # Python 3.11（推荐）
-PLATFORM="${PLATFORM:-manylinux2014_x86_64}"  # x86_64 Linux（推荐）；ARM 用 manylinux2014_aarch64
-# ============================================
+# ===== 默认组合（与你环境对齐，如离线服务器不同再改）=====
+PYVER="${PYVER:-313}"                         # Python 3.13
+PLATFORM="${PLATFORM:-manylinux2014_x86_64}"  # x86_64 Linux；ARM 用 manylinux2014_aarch64
+# =====================================================
 
 mkdir -p "${OUT_DIR}"
 

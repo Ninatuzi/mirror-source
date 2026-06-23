@@ -81,7 +81,7 @@ NEXUS_PASS='你的密码' ./setup-nexus-repos.sh
 ```bash
 cd online-machine
 
-# pip：默认已是稳妥组合 Python 3.11 + x86_64 Linux，直接跑即可
+# pip：默认已是与你环境对齐的组合 Python 3.13 + x86_64 Linux，直接跑即可
 ./download-pip.sh ../common-packages/pip-common.txt
 # （若离线服务器是 ARM 或其他 Python 版本，才需要覆盖，例如：
 #   PYVER=312 PLATFORM=manylinux2014_aarch64 ./download-pip.sh ../common-packages/pip-common.txt ）
@@ -150,10 +150,12 @@ npm install lodash          # 应从 npm-hosted 拉取成功
 `pip download` 默认只下与「当前机器」匹配的 wheel。如果联网机是 Mac/Windows、离线服务器是 Linux，直接下的包装不上。
 `download-pip.sh` 已用 `--platform`/`--python-version` 强制按目标平台下载。
 
-**默认已选用稳妥推荐组合：Python 3.11 + x86_64 Linux**
-（`PYVER=311` + `PLATFORM=manylinux2014_x86_64`，wheel 覆盖最全、兼容性最好）。
-如果你的离线服务器就是 x86_64 Linux，**直接用默认值即可，无需改动**。
+**默认已选用与你环境对齐的组合：Python 3.13 + x86_64 Linux**
+（`PYVER=313` + `PLATFORM=manylinux2014_x86_64`）。
+如果你的离线服务器就是 x86_64 Linux + Python 3.13，**直接用默认值即可，无需改动**。
 
 只有当离线服务器不是这个组合时才需要改：
 - ARM64 Linux：`PLATFORM=manylinux2014_aarch64`
-- 其他 Python 版本：3.10 → `PYVER=310`，3.12 → `PYVER=312`，以此类推。
+- 其他 Python 版本：3.11 → `PYVER=311`，3.12 → `PYVER=312`，以此类推。
+
+> 提示：Python 3.13 较新，极少数库可能还没发布对应 wheel；脚本已自动用源码包(sdist)兜底，必要时离线服务器上需有编译环境(gcc 等)。
