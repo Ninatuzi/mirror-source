@@ -10,17 +10,22 @@
 #   pip 下载的是与"当前机器"匹配的 wheel。如果联网机和离线服务器的
 #   操作系统/架构/Python 版本不一致，装的时候可能用不了。
 #   下面默认按 manylinux + 指定 Python 版本下载，确保在离线 Linux 服务器可用。
-#   请把 PYVER / PLATFORM 改成离线服务器的真实情况。
+#
+#   默认值已设为「稳妥推荐组合」：Python 3.11 + x86_64 Linux
+#   —— wheel 覆盖最全、兼容性最好。除非你的离线服务器明确不是这个组合，
+#      否则直接用默认值即可。
+#   ARM 服务器：PLATFORM=manylinux2014_aarch64
+#   其他 Python：3.10 -> 310, 3.12 -> 312
 #
 set -euo pipefail
 
 REQ_FILE="${1:-../common-packages/pip-common.txt}"
 OUT_DIR="pip-packages"
 
-# ===== 改成离线服务器的实际情况 =====
-PYVER="${PYVER:-311}"                         # 离线服务器的 Python 版本，如 3.11 -> 311
-PLATFORM="${PLATFORM:-manylinux2014_x86_64}"  # x86_64 用这个；ARM 用 manylinux2014_aarch64
-# ==================================
+# ===== 稳妥推荐组合（如离线服务器不同再改）=====
+PYVER="${PYVER:-311}"                         # Python 3.11（推荐）
+PLATFORM="${PLATFORM:-manylinux2014_x86_64}"  # x86_64 Linux（推荐）；ARM 用 manylinux2014_aarch64
+# ============================================
 
 mkdir -p "${OUT_DIR}"
 
