@@ -18,7 +18,9 @@ fi
 
 echo ">> 解压到 ${INSTALL_DIR} ..."
 mkdir -p "${INSTALL_DIR}"
-tar xzf "${TARBALL}" -C "${INSTALL_DIR}"
+# 用 tar xf（不带 z）：GNU tar 会自动识别 gzip 或普通 tar，
+# 兼容 .tar.gz 和被解过 gzip 的 .tar 两种情况。
+tar xf "${TARBALL}" -C "${INSTALL_DIR}"
 
 # 解压后会有两个目录：
 #   nexus-3.x.x-xx/      程序本体（bin、etc 等）
