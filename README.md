@@ -18,13 +18,15 @@
 
 ```
 offline-server/      离线服务器上用
-  docker-compose.yml     部署 Nexus
-  setup-nexus-repos.sh   创建 pypi-hosted / npm-hosted 仓库
-  import-pip.sh          导入 pip 包
-  import-npm.sh          导入 npm 包
+  install-nexus-tarball.sh   ★ 用压缩包安装 Nexus（不需要 Docker，推荐）
+  docker-compose.yml         可选：如果服务器有 Docker 也可以用这个
+  setup-nexus-repos.sh       创建 pypi-hosted / npm-hosted 仓库
+  import-pip.sh              导入 pip 包
+  import-npm.sh              导入 npm 包
 online-machine/      联网机器上用
-  download-pip.sh        下载并打包 pip 依赖
-  download-npm.sh        下载并打包 npm 依赖
+  download-nexus.sh          ★ 下载 Nexus 安装包（普通 HTTPS 下载，不需要 Docker）
+  download-pip.sh            下载并打包 pip 依赖
+  download-npm.sh            下载并打包 npm 依赖
 common-packages/     常用包清单（按需增删）
   pip-common.txt
   npm-common.txt
@@ -35,35 +37,50 @@ client-config/       客户端源配置模板
 
 ---
 
-## 前置准备（重要）
+## 安装方式：两选一
 
-离线服务器是隔离的，**这些东西也得先准备好**，别只想着包：
+### 方式 A：压缩包安装（推荐，不需要 Docker）★
 
-1. **Docker + docker-compose**：离线服务器要能跑容器。若没装，需另行离线安装。
-2. **Nexus 镜像本身**：离线服务器拉不了 Docker Hub，所以在联网机上先：
-   ```bash
-   docker pull sonatype/nexus3:latest
-   docker save sonatype/nexus3:latest -o nexus3.tar
-   # scp nexus3.tar 到离线服务器后:
-   docker load -i nexus3.tar
-   ```
-3. **Python3 / Node+npm**：离线服务器上要有这俩运行时（导入脚本和客户端都要用）。
+适用于"联网机不能用 Docker"或"不想依赖 Docker"的情况。
+Nexus 官方提供原生 Linux 压缩包，**较新版本自带 Java 运行时，离线服务器连 Java 都不用装**。
+
+### 方式 B：Docker 安装（仅当两边都能用 Docker 时）
+
+用 `offline-server/docker-compose.yml`。需要在联网机 `docker pull sonatype/nexus3` →
+`docker save` 成 tar → scp → 离线服务器 `docker load`。本文档主线按方式 A 写。
+
+---
+
+## 前置准备
+
+1. **Python3 / Node+npm**：离线服务器上要有这俩运行时（导入脚本和客户端都要用）。
    若平台机器本身没有，也需要离线安装。
-4. **联网机和离线服务器的 OS/架构/Python 版本最好一致**（影响 wheel 是否可用，见下方说明）。
+2. **Nexus 不能用 root 运行**：`install-nexus-tarball.sh` 会自动建一个 `nexus` 用户。
+3. **联网机和离线服务器的 OS/架构/Python 版本最好一致**（影响 wheel 是否可用，见下方说明）。
 
 ---
 
 ## 操作步骤
 
-### 第 1 步：在离线服务器部署 Nexus
+### 第 1 步：在离线服务器部署 Nexus（压缩包方式）
 
 ```bash
+# (1) 在联网机下载 Nexus 安装包（普通 HTTPS 下载，不需要 Docker）
+cd online-machine
+./download-nexus.sh          # 产出 nexus-unix.tar.gz
+
+# (2) scp 到离线服务器
+scp nexus-unix.tar.gz user@离线服务器:/path/to/offline-server/
+
+# (3) 在离线服务器安装并启动
 cd offline-server
-docker compose up -d
-# 等 2~3 分钟首次初始化。拿初始密码：
-docker exec -it nexus cat /nexus-data/admin.password
+sudo ./install-nexus-tarball.sh nexus-unix.tar.gz
+# 按提示后台启动:
+sudo -u nexus /opt/nexus/nexus-3*/bin/nexus start
 ```
-浏览器访问 `http://离线服务器IP:8081`，用 `admin` + 上面的初始密码登录，按提示改密码（假设改成 `admin123`）。
+等 2~3 分钟首次初始化。浏览器访问 `http://离线服务器IP:8081`。
+初始 admin 密码在 `/opt/nexus/sonatype-work/nexus3/admin.password`，
+用 `admin` + 该密码登录，按提示改密码（假设改成 `admin123`）。
 > 登录后建议开启 "Enable anonymous access"，这样客户端拉包不用配账号（仅拉取，发布仍需账号）。
 
 ### 第 2 步：创建仓库
