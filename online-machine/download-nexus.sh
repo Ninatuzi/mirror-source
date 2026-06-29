@@ -9,8 +9,12 @@ set -euo pipefail
 
 OUT="nexus-unix.tar.gz"
 
-# Sonatype 官方「最新版」稳定下载地址（自带 JRE，无需另装 Java）
-URL="${NEXUS_URL:-https://download.sonatype.com/nexus/3/latest-unix.tar.gz}"
+# Sonatype 官方下载地址（自带平台 JDK，无需另装 Java）。
+# 注意：Sonatype 已按 CPU 架构拆包，旧的 latest-unix.tar.gz 已失效。
+# 默认用 x86-64 的「最新版」指针；如需锁定版本，把 URL 换成带版本号的链接，例如：
+#   https://download.sonatype.com/nexus/3/nexus-3.93.2-01-linux-x86_64.tar.gz
+# ARM64 服务器请去官方下载页取对应链接：https://help.sonatype.com/en/download.html
+URL="${NEXUS_URL:-https://download.sonatype.com/nexus/3/latest-linux-x86_64.tar.gz}"
 
 echo ">> 下载 Nexus 压缩包: ${URL}"
 if command -v curl >/dev/null 2>&1; then

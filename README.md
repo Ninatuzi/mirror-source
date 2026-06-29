@@ -68,7 +68,13 @@ Nexus 官方提供原生 Linux 压缩包，**较新版本自带 Java 运行时�
 # (1) 在联网机下载 Nexus 安装包（普通 HTTPS 下载，不需要 Docker）
 cd online-machine
 ./download-nexus.sh          # 产出 nexus-unix.tar.gz
-
+```
+> 也可以直接用浏览器/curl 下载（x86-64 Linux）：
+> - 最新版：`https://download.sonatype.com/nexus/3/latest-linux-x86_64.tar.gz`
+> - 锁定版本：`https://download.sonatype.com/nexus/3/nexus-3.93.2-01-linux-x86_64.tar.gz`
+> - ARM64 / 其他平台见 https://help.sonatype.com/en/download.html
+> 安装包自带对应平台的 JDK，离线服务器不用单独装 Java。
+```bash
 # (2) scp 到离线服务器
 scp nexus-unix.tar.gz user@离线服务器:/path/to/offline-server/
 
