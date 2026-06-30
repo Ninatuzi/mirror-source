@@ -24,12 +24,15 @@ Write-Host ">> Downloading binary wheels (target $Platform, py$PyVer) ..."
 # (download Linux packages while running on Windows).
 pip download -r $ReqFile -d $OutDir --only-binary=:all: `
     --platform $Platform --python-version $PyVer --implementation cp
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "!! Some packages had no matching wheel; will try sdist next" -ForegroundColor Yellow
-}
 
-Write-Host ">> Downloading source packages (sdist) as fallback ..."
-pip download -r $ReqFile -d $OutDir --no-binary=:all: --no-deps
+if ($LASTEXITCODE -ne 0) {
+    # Only needed if some package had no matching wheel. For well-supported
+    # targets (py3.13 + manylinux x86_64) this branch is usually skipped.
+    Write-Host "!! Some packages had no wheel; trying sdist fallback ..." -ForegroundColor Yellow
+    pip download -r $ReqFile -d $OutDir --no-binary=:all: --no-deps
+} else {
+    Write-Host ">> All wheels downloaded; sdist fallback not needed."
+}
 
 Write-Host ">> Packing into pip-packages.tar.gz ..."
 # Windows 10/11 ships tar.exe

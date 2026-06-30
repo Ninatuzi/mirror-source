@@ -30,22 +30,23 @@ mkdir -p "${OUT_DIR}"
 
 echo ">> 下载二进制 wheel（按目标平台 ${PLATFORM}, py${PYVER}）..."
 # --only-binary :all: 强制只下 wheel，配合 --platform 实现跨平台下载
-pip download \
+if pip download \
   -r "${REQ_FILE}" \
   -d "${OUT_DIR}" \
   --only-binary=:all: \
   --platform "${PLATFORM}" \
   --python-version "${PYVER}" \
-  --implementation cp \
-  || echo "!! 部分包没有匹配 wheel，下面再补源码包"
-
-echo ">> 补充下载源码包（sdist），覆盖纯 Python / 无 wheel 的包 ..."
-pip download \
-  -r "${REQ_FILE}" \
-  -d "${OUT_DIR}" \
-  --no-binary=:all: \
-  --no-deps \
-  || true
+  --implementation cp ; then
+  echo ">> 全部 wheel 下载完成，无需 sdist 兜底"
+else
+  echo "!! 部分包没有匹配 wheel，下面用源码包兜底 ..."
+  pip download \
+    -r "${REQ_FILE}" \
+    -d "${OUT_DIR}" \
+    --no-binary=:all: \
+    --no-deps \
+    || true
+fi
 
 echo ">> 打包 ..."
 tar czf pip-packages.tar.gz "${OUT_DIR}"
