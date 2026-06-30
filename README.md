@@ -101,6 +101,8 @@ NEXUS_PASS='你的密码' ./setup-nexus-repos.sh
 
 ### 第 3 步：在联网机器下载依赖
 
+#### Linux / Mac（用 bash 脚本）
+
 ```bash
 cd online-machine
 
@@ -114,6 +116,24 @@ cd online-machine
 ./download-npm.sh ../common-packages/npm-common.txt
 # 产出 npm-packages.tar.gz
 ```
+
+#### Windows（用 PowerShell 脚本，不需要 bash）
+
+需要联网机已装 Python 和 Node（Node 去 nodejs.org 下 LTS）。Windows 10/11 自带 `tar`。
+
+```powershell
+cd online-machine
+
+# 如遇执行策略限制，先放开本进程:
+Set-ExecutionPolicy -Scope Process Bypass
+
+# pip 依赖（默认目标 Python 3.13 + x86_64 Linux）
+.\download-pip.ps1          # 产出 pip-packages.tar.gz
+
+# npm 依赖
+.\download-npm.ps1          # 产出 npm-packages.tar.gz
+```
+然后用 WinSCP / scp 把两个 .tar.gz 传到离线服务器的 /root/BYX/。
 
 ### 第 4 步：scp 传到离线服务器
 
