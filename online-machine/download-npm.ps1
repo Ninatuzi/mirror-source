@@ -1,11 +1,13 @@
-# Windows PowerShell 版：下载 npm 依赖（含全部传递依赖）并打包（不需要 bash）
-# 在【联网的 Windows 机器】上运行。需要已安装 Node + npm。
+# Windows PowerShell version: download npm dependencies (incl. all transitive deps)
+# and package them (no bash needed). Run on the ONLINE Windows machine.
+# Requires Node + npm installed.
 #
-# 用法（在 PowerShell 里，进入 online-machine 目录后）:
-#   powershell -ExecutionPolicy Bypass -File .\download-npm.ps1
+# Usage (in PowerShell, inside the online-machine folder):
+#   Set-ExecutionPolicy -Scope Process Bypass
+#   .\download-npm.ps1
 #
-# 原理：用清单生成 package.json -> npm 解析出完整依赖树写入 package-lock.json
-#       -> 从 lock 文件提取所有 .tgz 地址逐个下载。
+# How it works: generate a package.json from the list -> npm resolves the full
+# dependency tree into package-lock.json -> extract every .tgz URL and download.
 
 param(
     [string]$ListFile = "..\common-packages\npm-common.txt"
@@ -18,21 +20,21 @@ Remove-Item -Recurse -Force $WorkDir -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $WorkDir | Out-Null
 New-Item -ItemType Directory -Force -Path $OutDir  | Out-Null
 
-Write-Host ">> 生成临时 package.json ..."
+Write-Host ">> Generating temporary package.json ..."
 Push-Location $WorkDir
 npm init -y | Out-Null
 Pop-Location
 
-# 读取清单，忽略注释(#)和空行
+# Read the package list, ignore comments (#) and blank lines
 $pkgs = Get-Content $ListFile | ForEach-Object { ($_ -replace '#.*', '').Trim() } |
         Where-Object { $_ -ne '' }
 
-Write-Host ">> 解析依赖树（只生成 lock，不真正安装）: $($pkgs.Count) 个直接依赖 ..."
+Write-Host ">> Resolving dependency tree (lock only, no real install): $($pkgs.Count) direct deps ..."
 Push-Location $WorkDir
 npm install --package-lock-only --save @pkgs
 Pop-Location
 
-Write-Host ">> 从 package-lock.json 提取 tarball 地址 ..."
+Write-Host ">> Extracting tarball URLs from package-lock.json ..."
 $lockPath = Join-Path $WorkDir "package-lock.json"
 $lock = Get-Content $lockPath -Raw | ConvertFrom-Json
 
@@ -43,7 +45,7 @@ foreach ($prop in $lock.packages.PSObject.Properties) {
 }
 $urls = $urls | Sort-Object -Unique
 
-Write-Host ">> 共 $($urls.Count) 个 tarball，开始下载 ..."
+Write-Host ">> $($urls.Count) tarballs to download ..."
 foreach ($url in $urls) {
     $fname = Split-Path $url -Leaf
     $dest  = Join-Path $OutDir $fname
@@ -57,10 +59,10 @@ foreach ($url in $urls) {
     }
 }
 
-Write-Host ">> 打包为 npm-packages.tar.gz ..."
+Write-Host ">> Packing into npm-packages.tar.gz ..."
 tar -czf npm-packages.tar.gz $OutDir
 
 $count = (Get-ChildItem $OutDir).Count
 Write-Host ""
-Write-Host ">> 完成: npm-packages.tar.gz (共 $count 个 tgz)"
-Write-Host ">> 下一步: 把 npm-packages.tar.gz 传到离线服务器的 /root/BYX/"
+Write-Host ">> Done: npm-packages.tar.gz ($count tgz files)"
+Write-Host ">> Next: copy npm-packages.tar.gz to the offline server /root/BYX/"
