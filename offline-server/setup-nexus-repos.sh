@@ -9,7 +9,7 @@
 set -euo pipefail
 
 # ===== 可按需修改 =====
-NEXUS_URL="${NEXUS_URL:-http://localhost:8081}"
+NEXUS_URL="${NEXUS_URL:-http://localhost:7012}"
 NEXUS_USER="${NEXUS_USER:-admin}"
 # 首次启动后的初始密码在容器内 /nexus-data/admin.password，
 # 登录 Web UI 改密后，把新密码填到这里或用环境变量传入。

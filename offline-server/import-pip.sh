@@ -12,7 +12,7 @@ set -euo pipefail
 PKG_DIR="${1:-pip-packages}"
 
 # ===== 改成你的 Nexus 实际地址/账号 =====
-NEXUS_URL="${NEXUS_URL:-http://localhost:8081}"
+NEXUS_URL="${NEXUS_URL:-http://localhost:7012}"
 NEXUS_USER="${NEXUS_USER:-admin}"
 NEXUS_PASS="${NEXUS_PASS:-admin123}"
 # =====================================

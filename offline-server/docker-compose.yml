@@ -4,7 +4,8 @@ services:
     container_name: nexus
     restart: unless-stopped
     ports:
-      - "8081:8081"   # Nexus Web UI + pip/npm 仓库入口
+      # 宿主机 7012 -> 容器内 Nexus 默认端口 8081；客户端访问 7012
+      - "7012:8081"   # Nexus Web UI + pip/npm 仓库入口
     volumes:
       - nexus-data:/nexus-data
     environment:

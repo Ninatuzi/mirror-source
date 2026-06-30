@@ -44,6 +44,20 @@ chown -R nexus:nexus "${INSTALL_DIR}"
 # 让 Nexus 以 nexus 用户运行
 echo 'run_as_user="nexus"' > "${NEXUS_HOME}/bin/nexus.rc"
 
+# 设置监听端口为 7012（默认是 8081）
+NEXUS_PORT="${NEXUS_PORT:-7012}"
+echo ">> 设置 Nexus 监听端口为 ${NEXUS_PORT} ..."
+PROP_DIR="${INSTALL_DIR}/sonatype-work/nexus3/etc"
+mkdir -p "${PROP_DIR}"
+PROP_FILE="${PROP_DIR}/nexus.properties"
+touch "${PROP_FILE}"
+if grep -q '^application-port=' "${PROP_FILE}" 2>/dev/null; then
+  sed -i "s/^application-port=.*/application-port=${NEXUS_PORT}/" "${PROP_FILE}"
+else
+  echo "application-port=${NEXUS_PORT}" >> "${PROP_FILE}"
+fi
+chown -R nexus:nexus "${INSTALL_DIR}/sonatype-work"
+
 echo
 echo ">> 安装完成。启动方式（任选其一）："
 echo
@@ -54,7 +68,7 @@ echo "   后台运行:"
 echo "     sudo -u nexus ${NEXUS_HOME}/bin/nexus start"
 echo "     # 停止: sudo -u nexus ${NEXUS_HOME}/bin/nexus stop"
 echo
-echo ">> 首次启动约 2~3 分钟。Web 界面: http://本机IP:8081"
+echo ">> 首次启动约 2~3 分钟。Web 界面: http://本机IP:${NEXUS_PORT}"
 echo ">> 初始 admin 密码在: ${INSTALL_DIR}/sonatype-work/nexus3/admin.password"
 echo
 echo ">> 启动并改完密码后，运行 setup-nexus-repos.sh 创建 pip/npm 仓库。"

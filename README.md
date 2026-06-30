@@ -84,7 +84,7 @@ sudo ./install-nexus-tarball.sh nexus-unix.tar.gz
 # 按提示后台启动:
 sudo -u nexus /opt/nexus/nexus-3*/bin/nexus start
 ```
-等 2~3 分钟首次初始化。浏览器访问 `http://离线服务器IP:8081`。
+等 2~3 分钟首次初始化。浏览器访问 `http://离线服务器IP:7012`。
 初始 admin 密码在 `/opt/nexus/sonatype-work/nexus3/admin.password`，
 用 `admin` + 该密码登录，按提示改密码（假设改成 `admin123`）。
 > 登录后建议开启 "Enable anonymous access"，这样客户端拉包不用配账号（仅拉取，发布仍需账号）。
@@ -96,8 +96,8 @@ sudo -u nexus /opt/nexus/nexus-3*/bin/nexus start
 NEXUS_PASS='你的密码' ./setup-nexus-repos.sh
 ```
 完成后会有两个仓库：
-- `http://离线服务器IP:8081/repository/pypi-hosted/`
-- `http://离线服务器IP:8081/repository/npm-hosted/`
+- `http://离线服务器IP:7012/repository/pypi-hosted/`
+- `http://离线服务器IP:7012/repository/npm-hosted/`
 
 ### 第 3 步：在联网机器下载依赖
 
